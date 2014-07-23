@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+# This script serves as the
+# [**Python Buildpack**](https://github.com/heroku/heroku-buildpack-python)
+# detector.
+#
+# A [buildpack](http://devcenter.heroku.com/articles/buildpacks) is an
+# adapter between a Python application and Heroku's runtime.
+
+# ## Usage
+# Compiling an app into a slug is simple:
+#
+#     $ bin/detect <build-dir> <cache-dir>
+
+# Read heroku.yml
+BIN_DIR=$(cd $(dirname $0); pwd) # absolute path
+ROOT_DIR=$(dirname $BIN_DIR)
+BUILD_DIR=$1
+
+source $ROOT_DIR/parse_yml.sh
+
+eval $(parse_yaml $BUILD_DIR/heroku.yml)
+
+if [[ -z ${REQUIREMENTS_PATH} ]];
+    then REQUIREMENTS_PATH='requirements.txt';
+fi
+
+# Exit early if app is clearly not Python.
+if [ ! -f $BUILD_DIR/$REQUIREMENTS_PATH ] && [ ! -f $BUILD_DIR/setup.py ]; then
+  exit 1
+fi
+
+echo 'Python nginx-buildpack'
+
+exit 0

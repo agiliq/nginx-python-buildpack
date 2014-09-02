@@ -4,7 +4,7 @@ A better heroku python buildpack
 Heroku has a [Python buildpack](https://github.com/heroku/heroku-buildpack-python) but it is a suboptimal in some ways.
 
 1. [Gunicorn directly behind heroku router is succeptible to a ddos attack.](http://blog.etianen.com/blog/2014/01/19/gunicorn-heroku-django/)
-2. The recoomended static file server is [static](https://pypi.python.org/pypi/static). Which is a bit of cop out. Something like nginx is much better suited for this.
+2. The recommended static file server is [static](https://pypi.python.org/pypi/static). Which is a bit of cop out. Something like nginx is much better suited for this.
 3. In search for Heroku's no configuration deploys, it doesn't allow setting things like the location of manage.py explicitly. To find the manage.py the buildpack is doing "MANAGE_FILE=$(find . -maxdepth 3 -type f -name 'manage.py' | head -1)". This goes against "explicit is better tha implicit" and will mean that different manage.py will be found in different heroku deploys.
 
 What this does

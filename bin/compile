@@ -308,7 +308,10 @@ url='https://github.com/agiliq/nginx-python-buildpack.git'
 
 mkdir -p "get_clone"
 cd get_clone
+#changes
+echo "----------> cd to get_clone"
 git clone $url
+echo "----------> cloning done..."
 cd nginx-python-buildpack/
 
 mkdir -p "$1/bin/"

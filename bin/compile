@@ -26,6 +26,7 @@ LEGACY_TRIGGER="lib/python2.7"
 PROFILE_PATH="$BUILD_DIR/.profile.d/python.sh"
 
 DEFAULT_PYTHON_VERSION="python-2.7.6"
+DEFAULT_CEDAR_STACK='cedar-14'
 PYTHON_EXE="/app/.heroku/python/bin/python"
 PIP_VERSION="1.5.4"
 SETUPTOOLS_VERSION="2.1"
@@ -164,13 +165,13 @@ fi
 if [ ! "$SKIP_INSTALL" ]; then
   bpwatch start install_python
     puts-step "Preparing Python runtime ($PYTHON_VERSION)"
-    curl http://envy-versions.s3.amazonaws.com/$PYTHON_VERSION.tar.bz2 -s | tar jx &> /dev/null
+    mkdir -p .heroku/python
+    curl https://lang-python.s3.amazonaws.com/$DEFAULT_CEDAR_STACK/runtimes/$PYTHON_VERSION.tar.gz -s | tar zxv -C .heroku/python &> /dev/null
     if [[ $? != 0 ]] ; then
       puts-warn "Requested runtime ($PYTHON_VERSION) was not found."
       puts-warn "Aborting.  More info: https://devcenter.heroku.com/articles/python-support"
       exit 1
     fi
-    mv python .heroku/python
   bpwatch stop install_python
 
   # Record for future reference.

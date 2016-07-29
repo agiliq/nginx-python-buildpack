@@ -1,55 +1,30 @@
-Heroku buildpack: Python
-========================
+A better heroku python buildpack
+--------------------------------
 
-This is a [Heroku buildpack](http://devcenter.heroku.com/articles/buildpacks) for Python apps, powered by [pip](http://www.pip-installer.org/).
+Heroku has a [Python buildpack](https://github.com/heroku/heroku-buildpack-python) but it is a suboptimal in some ways.
 
+1. [Gunicorn directly behind heroku router is succeptible to a ddos attack.](http://blog.etianen.com/blog/2014/01/19/gunicorn-heroku-django/)
+2. The recommended static file server is [static](https://pypi.python.org/pypi/static). Which is a bit of cop out. Something like nginx is much better suited for this.
+3. In search for Heroku's no configuration deploys, it doesn't allow setting things like the location of manage.py explicitly. To find the manage.py the buildpack is doing "MANAGE_FILE=$(find . -maxdepth 3 -type f -name 'manage.py' | head -1)". This goes against "explicit is better tha implicit" and will mean that different manage.py will be found in different heroku deploys.
 
-Usage
------
+What this does
+----------------
 
-Example usage:
+To workaround this
 
-    $ ls
-    Procfile  requirements.txt  web.py
+1. The buildpack installs nginx, and gunicorn is used behind nginx.
+2. Static files are served via nginx
+3. It takes a heroku.yml file which allows overriding the location of `manage.py` and `requirements.txt`
 
-    $ heroku create --stack cedar --buildpack git://github.com/heroku/heroku-buildpack-python.git
+Some other benefits you get with this
 
-    $ git push heroku master
-    ...
-    -----> Fetching custom git buildpack... done
-    -----> Python app detected
-    -----> No runtime.txt provided; assuming python-2.7.6.
-    -----> Preparing Python runtime (python-2.7.6)
-    -----> Installing Setuptools (2.1)
-    -----> Installing Pip (1.5.2)
-    -----> Installing dependencies using Pip (1.5.2)
-           Downloading/unpacking Flask==0.7.2 (from -r requirements.txt (line 1))
-           Downloading/unpacking Werkzeug>=0.6.1 (from Flask==0.7.2->-r requirements.txt (line 1))
-           Downloading/unpacking Jinja2>=2.4 (from Flask==0.7.2->-r requirements.txt (line 1))
-           Installing collected packages: Flask, Werkzeug, Jinja2
-           Successfully installed Flask Werkzeug Jinja2
-           Cleaning up...
+1. Since you have nginx, you can take take advantage of nginx tooling. In particular, the bundled nginx comes with pagespeed enabled, which can make a signifcant impact to your forntend performance.
+2. You can use nginx to do rewrites. (For example to force ssl only).
+3. You can host things like sphinx docs in a folder, and serve it directly from nginx.
 
-You can also add it to upcoming builds of an existing application:
+Inspirations
+-------------
 
-    $ heroku config:add BUILDPACK_URL=git://github.com/heroku/heroku-buildpack-python.git
+1. [Heroku buildpack multi](https://github.com/ddollar/heroku-buildpack-multi)
+2. [Nginx buildpack](https://github.com/ryandotsmith/nginx-buildpack)
 
-The buildpack will detect your app as Python if it has the file `requirements.txt` in the root.
-
-It will use Pip to install your dependencies, vendoring a copy of the Python runtime into your slug.
-
-Specify a Runtime
------------------
-
-You can also provide arbitrary releases Python with a `runtime.txt` file.
-
-    $ cat runtime.txt
-    python-3.3.3
-
-Runtime options include:
-
-- python-2.7.6
-- python-3.3.3
-- pypy-1.9 (experimental)
-
-Other [unsupported runtimes](https://github.com/kennethreitz/python-versions/tree/master/formula) are available as well.

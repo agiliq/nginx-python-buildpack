@@ -313,6 +313,7 @@ echo "----------> cd to get_clone"
 git clone $url
 echo "----------> cloning done..."
 cd nginx-python-buildpack/
+echo "-----------> changed to buildpack directory"
 
 mkdir -p "$1/bin/"
 cp bin/nginx "$1/bin/"

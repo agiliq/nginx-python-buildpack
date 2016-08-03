@@ -317,7 +317,7 @@ echo "-----------> changed to buildpack directory"
 
 mkdir -p "$1/bin/"
 echo "------> Directory created"
-cp bin/nginx-$DEFAULT_CEDAR_STACK "$1/bin/"
+cp bin/nginx-$DEFAULT_CEDAR_STACK "$1/bin/nginx"
 echo "------> copied nginx to bin dir"
 # nginx_version=$(./bin/nginx -V 2>&1 | head -1 | awk '{ print $NF }')
 # echo "-----> nginx-buildpack: Installed ${nginx_version} to app/bin"
